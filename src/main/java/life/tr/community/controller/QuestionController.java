@@ -3,6 +3,7 @@ package life.tr.community.controller;
 import life.tr.community.dto.CommentDTO;
 import life.tr.community.dto.QuestionDTO;
 import life.tr.community.enums.CommentTypeEnum;
+import life.tr.community.model.Question;
 import life.tr.community.service.CommentService;
 import life.tr.community.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +28,13 @@ public class QuestionController {
                            Model model
     ){
         QuestionDTO questionDTO=questionService.getById(id);
-
+        List<QuestionDTO> relatedQuestions=questionService.selectRelated(questionDTO);
         List<CommentDTO> comments=commentService.ListByTargetId(id, CommentTypeEnum.QUESTION);
         //累加阅读数
         questionService.incView(id);
         model.addAttribute("question",questionDTO);
         model.addAttribute("comments",comments);
+        model.addAttribute("relatedQuestions",relatedQuestions);
         return "question";
     }
 }
