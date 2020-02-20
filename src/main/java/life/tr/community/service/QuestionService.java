@@ -34,7 +34,7 @@ public class QuestionService {
     @Autowired
     private QuestionExtMapper questionExtMapper;
 
-    public PaginationDTO list(String search,Integer page, Integer size) {
+    public PaginationDTO list(String search, String tag, Integer page, Integer size) {
 
 
         if(StringUtils.isNotBlank(search)){
@@ -47,6 +47,7 @@ public class QuestionService {
         Integer totalPage;
         QuestionQueryDTO questionQueryDTO = new QuestionQueryDTO();
         questionQueryDTO.setSearch(search);
+        questionQueryDTO.setTag(tag);
         Integer totalCount = questionExtMapper.countBySearch(questionQueryDTO);
         if(totalCount % size == 0 ){
             totalPage = totalCount /size;
@@ -62,7 +63,7 @@ public class QuestionService {
         }
         paginationDTO.setPagination(totalPage,page);
 
-        Integer offset = size * (page -1);
+        Integer offset = page < 1 ? 0 :size * (page -1);
         questionQueryDTO.setSize(size);
         questionQueryDTO.setPage(offset);
         List<Question> questions = questionExtMapper.selectBySearch(questionQueryDTO);
