@@ -1876,3 +1876,7 @@ org.springframework.expression.spel.SpelParseException: EL1041E: After parsing a
 2020-02-20 12:25:23.657  INFO 23140 --- [http-nio-8887-exec-3] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
 2020-02-20 12:25:23.657  INFO 23140 --- [http-nio-8887-exec-3] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
 2020-02-20 12:25:23.660  INFO 23140 --- [http-nio-8887-exec-3] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2020-02-20 13:17:44.950  INFO 23140 --- [Thread-25] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
+2020-02-20 13:17:44.952  INFO 23140 --- [Thread-25] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2020-02-20 13:17:44.952  INFO 23140 --- [Thread-25] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Shutdown initiated...
+2020-02-20 13:17:45.160  INFO 23140 --- [Thread-25] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Shutdown completed.
