@@ -3,6 +3,7 @@ package life.tr.community.service;
 import life.tr.community.dto.PaginationDTO;
 import life.tr.community.dto.QuestionDTO;
 import life.tr.community.dto.QuestionQueryDTO;
+import life.tr.community.enums.SortEnum;
 import life.tr.community.exception.CustomizeErrorCode;
 import life.tr.community.exception.CustomizeException;
 import life.tr.community.mapper.QuestionExtMapper;
@@ -34,21 +35,46 @@ public class QuestionService {
     @Autowired
     private QuestionExtMapper questionExtMapper;
 
-    public PaginationDTO list(String search, String tag, Integer page, Integer size) {
-
-
-        if(StringUtils.isNotBlank(search)){
+    public PaginationDTO list(String search, String tag, String sort, Integer page, Integer size) {
+        if (StringUtils.isNotBlank(search)) {
             String[] tags = StringUtils.split(search, " ");
-            search = Arrays.stream(tags).collect(Collectors.joining("|"));
+            search = Arrays
+                    .stream(tags)
+                    .filter(StringUtils::isNotBlank)
+                    .map(t -> t.replace("+", "").replace("*", "").replace("?", ""))
+                    .filter(StringUtils::isNotBlank)
+                    .collect(Collectors.joining("|"));
+        }
+
+        PaginationDTO paginationDTO = new PaginationDTO();
+
+        Integer totalPage;
+
+        QuestionQueryDTO questionQueryDTO = new QuestionQueryDTO();
+        questionQueryDTO.setSearch(search);
+
+        if (StringUtils.isNotBlank(tag)) {
+            tag = tag.replace("+", "").replace("*", "").replace("?", "");
+            questionQueryDTO.setTag(tag);
+        }
+
+        for (SortEnum sortEnum : SortEnum.values()) {
+            if (sortEnum.name().toLowerCase().equals(sort)) {
+                questionQueryDTO.setSort(sort);
+
+                if (sortEnum == SortEnum.HOT7) {
+                    questionQueryDTO.setTime(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 7);
+                }
+                if (sortEnum == SortEnum.HOT30) {
+                    questionQueryDTO.setTime(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30);
+                }
+                break;
+            }
         }
 
 
-        PaginationDTO paginationDTO = new PaginationDTO();
-        Integer totalPage;
-        QuestionQueryDTO questionQueryDTO = new QuestionQueryDTO();
-        questionQueryDTO.setSearch(search);
-        questionQueryDTO.setTag(tag);
         Integer totalCount = questionExtMapper.countBySearch(questionQueryDTO);
+
         if(totalCount % size == 0 ){
             totalPage = totalCount /size;
         }else {
@@ -147,6 +173,16 @@ public class QuestionService {
             questionMapper.insert(question);
         }else {
             //更新
+
+            Question dbQuestion = questionMapper.selectByPrimaryKey(question.getId());
+            if (dbQuestion == null) {
+                throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+            }
+
+            if (dbQuestion.getCreator().longValue() != question.getCreator().longValue()) {
+                throw new CustomizeException(CustomizeErrorCode.INVALID_OPERATION);
+            }
+
             Question updateQuestion = new Question();
             updateQuestion.setGmtModified(System.currentTimeMillis());
             updateQuestion.setTitle(question.getTitle());

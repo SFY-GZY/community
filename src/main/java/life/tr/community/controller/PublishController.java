@@ -2,8 +2,6 @@ package life.tr.community.controller;
 
 import life.tr.community.cache.TagCache;
 import life.tr.community.dto.QuestionDTO;
-import life.tr.community.mapper.QuestionMapper;
-import life.tr.community.mapper.UserMapper;
 import life.tr.community.model.Question;
 import life.tr.community.model.User;
 import life.tr.community.service.QuestionService;
@@ -52,7 +50,6 @@ public class PublishController {
             HttpServletRequest request,
             Model model
     ){
-
         model.addAttribute("title",title);
         model.addAttribute("description",description);
         model.addAttribute("tag",tag);
